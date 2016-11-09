@@ -18,6 +18,7 @@
  */
 
 var exec = require('cordova/exec');
+
 var _ = require('org.apache.cordova.beacon.underscorejs');
 
 var Regions = require('org.apache.cordova.beacon.Regions');
@@ -89,11 +90,20 @@ LocationManager.prototype.setDelegate = function(newDelegate) {
  * @returns {Promise}
  */
 LocationManager.prototype._registerDelegateCallbackId = function () {
-	this.appendToDeviceLog('registerDelegateCallbackId()');
+	var me = this;
+
+	me.appendToDeviceLog('registerDelegateCallbackId()');
 
 	return new Promise(function (resolve, reject) {
-		exec(_.bind(this._onDelegateCallback, this, resolve), _.bind(this._onDelegateCallback, this, resolve),
-			"LocationManager", "registerDelegateCallbackId", []);
+		exec(
+			_.bind(me._onDelegateCallback, me, resolve),
+			_.bind(me._onDelegateCallback, me, resolve),
+
+			"LocationManager",
+			"registerDelegateCallbackId",
+
+			[]
+		);
 	});
 };
 
@@ -110,13 +120,13 @@ LocationManager.prototype._registerDelegateCallbackId = function () {
  * @returns {undefined}
  */
 LocationManager.prototype._onDelegateCallback = function (resolve, pluginResult) {
-
 	this.appendToDeviceLog('_onDelegateCallback() ' + JSON.stringify(pluginResult));
 
 	if (pluginResult && _.isString(pluginResult['eventType'])) { // The native layer calling the DOM with a delegate event.
 		this._mapDelegateCallback(pluginResult);
-	} else
+	} else {
 		resolve();
+	}
 };
 
 /**
