@@ -82,13 +82,13 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
     private static final String BACKGROUND_SCAN_PERIOD_NAME = "Altbeacon.BackgroundScanPeriod";
     private static final String BACKGROUND_BETWEEN_SCAN_PERIOD_NAME = "Altbeacon.BackgroundBetweenScanPeriod";
     // The default duration in milliseconds of the bluetooth scan cycle
-    private static final int DEFAULT_FOREGROUND_SCAN_PERIOD = 1.1 * 1000;
+    private static final int DEFAULT_FOREGROUND_SCAN_PERIOD = (int)(1.1 * 1000);
     // The default duration in milliseconds spent not scanning between each bluetooth scan cycle
-    private static final int DEFAULT_FOREGROUND_BETWEEN_SCAN_PERIOD = 0 * 1000;
+    private static final int DEFAULT_FOREGROUND_BETWEEN_SCAN_PERIOD = (int)(0 * 1000);
     // The default duration in milliseconds of the bluetooth scan cycle when no ranging/monitoring clients are in the foreground
-    private static final int DEFAULT_BACKGROUND_SCAN_PERIOD = 10 * 1000;
+    private static final int DEFAULT_BACKGROUND_SCAN_PERIOD = (int)(10 * 1000);
     // The default duration in milliseconds spent not scanning between each bluetooth scan cycle when no ranging/monitoring clients are in the foreground
-    private static final int DEFAULT_BACKGROUND_BETWEEN_SCAN_PERIOD = 60 * 1000;
+    private static final int DEFAULT_BACKGROUND_BETWEEN_SCAN_PERIOD = (int)(60 * 1000);
     private static int CDV_LOCATION_MANAGER_DOM_DELEGATE_TIMEOUT = 30;
     private static final int BUILD_VERSION_CODES_M = 23;
 
