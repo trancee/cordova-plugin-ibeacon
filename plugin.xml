@@ -101,12 +101,12 @@
 				</intent-filter>
 			</receiver>
             <service android:enabled="true"
-                     android:exported="true"
+                     android:exported="false"
                      android:isolatedProcess="false"
-                     android:label="iBeacon"
                      android:name="org.altbeacon.beacon.service.BeaconService">
             </service>
             <service android:enabled="true"
+                     android:exported="false"
                      android:name="org.altbeacon.beacon.BeaconIntentProcessor">
                 <meta-data android:name="background" android:value="true" />
                 <intent-filter android:priority="1" >
@@ -121,10 +121,7 @@
         <source-file src="src/android/ILocationManagerCommand.java" target-dir="src/com/unarin/cordova/beacon" />
         <source-file src="src/android/PausableThreadPoolExecutor.java" target-dir="src/com/unarin/cordova/beacon" />
 
-        <resource-file src="libs/android/android-beacon-library-2.9.1.aar" target="libs/android-beacon-library.aar" />
-        <!--
-		<source-file src="libs/android/altbeacon.jar" target-dir="libs" framework="true" />
-        -->
+        <framework src="src/android/AltBeacon.gradle" custom="true" type="gradleReference" />
     </platform>
 
 </plugin>
