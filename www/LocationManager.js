@@ -19,14 +19,15 @@
 
 var exec = require('cordova/exec');
 
-var _ = require('org.apache.cordova.beacon.underscorejs');
+var _ = require('cordova-plugin-beacon.underscorejs');
 
-var Regions = require('org.apache.cordova.beacon.Regions');
-var Delegate = require('org.apache.cordova.beacon.Delegate');
+var Regions = require('cordova-plugin-beacon.Regions');
+var Delegate = require('cordova-plugin-beacon.Delegate');
 
-var Region = require('org.apache.cordova.beacon.Region');
-var CircularRegion = require('org.apache.cordova.beacon.CircularRegion');
-var BeaconRegion = require('org.apache.cordova.beacon.BeaconRegion');
+var Region = require('cordova-plugin-beacon.Region');
+var CircularRegion = require('cordova-plugin-beacon.CircularRegion');
+var BeaconRegion = require('cordova-plugin-beacon.BeaconRegion');
+
 
 /**
  * Creates an instance of the plugin.

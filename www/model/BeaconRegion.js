@@ -17,8 +17,10 @@
  under the License.
  */
 
-var _ = require('org.apache.cordova.beacon.underscorejs');
-var Region = require('org.apache.cordova.beacon.Region');
+var _ = require('cordova-plugin-beacon.underscorejs');
+
+var Region = require('cordova-plugin-beacon.Region');
+
 
 /**
  * Constructor for {CLBeaconRegion}.

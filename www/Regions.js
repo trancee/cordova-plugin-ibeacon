@@ -17,10 +17,11 @@
  under the License.
  */
 
-var _ = require('org.apache.cordova.beacon.underscorejs');
-var CircularRegion = require('org.apache.cordova.beacon.CircularRegion');
-var BeaconRegion = require('org.apache.cordova.beacon.BeaconRegion');
-var Region = require('org.apache.cordova.beacon.Region');
+var _ = require('cordova-plugin-beacon.underscorejs');
+
+var Region = require('cordova-plugin-beacon.Region');
+var CircularRegion = require('cordova-plugin-beacon.CircularRegion');
+var BeaconRegion = require('cordova-plugin-beacon.BeaconRegion');
 
 
 /**

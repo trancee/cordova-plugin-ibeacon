@@ -36,7 +36,7 @@ function doneWhenCordovaIsReady(done) {
         window.BeaconRegion = locationManager.BeaconRegion;
 
 
-        window._ = cordova.require('org.apache.cordova.beacon.underscorejs');
+        window._ = cordova.require('cordova-plugin-beacon.underscorejs');
 
         done();
 

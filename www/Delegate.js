@@ -17,8 +17,9 @@
  under the License.
  */
 
-var _ = require('org.apache.cordova.beacon.underscorejs');
-var Regions = require('org.apache.cordova.beacon.Regions');
+var _ = require('cordova-plugin-beacon.underscorejs');
+
+var Regions = require('cordova-plugin-beacon.Regions');
 
 
 /**
