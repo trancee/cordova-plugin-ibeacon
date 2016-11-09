@@ -1,18 +1,14 @@
 <?xml version='1.0' encoding='utf-8'?>
-<plugin id="com.unarin.cordova.beacon" version="3.4.1" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+<plugin id="cordova-plugin-beacon" version="4.0.0" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
 
     <name>Proximity Beacon Plugin</name>
     <description>Proximity Beacon Monitoring and Transmission Plugin (supporting iBeacons)</description>
     <license>Apache 2.0</license>
-    <keywords>cordova,ibeacon,beacon,bluetooth,le</keywords>
-    <repo>https://github.com/petermetz/cordova-plugin-ibeacon.git</repo>
+    <keywords>cordova,altbeacon,ibeacon,beacon,bluetooth,le</keywords>
+    <repo>https://github.com/trancee/cordova-plugin-ibeacon.git</repo>
 
     <!-- Third party libraries -->
-    <js-module name="underscorejs" src="www/lib/underscore-min-1.6.js">
-        <runs/>
-    </js-module>
-
-    <js-module name="Q" src="www/lib/q.min.js">
+    <js-module name="underscorejs" src="www/lib/underscore-min.js">
         <runs/>
     </js-module>
 
@@ -78,7 +74,7 @@
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="LocationManager" >
-                <param name="android-package" value="com.unarin.cordova.beacon.LocationManager"/>
+                <param name="android-package" value="org.apache.cordova.beacon.LocationManager"/>
             </feature>
         </config-file>
 
@@ -86,9 +82,6 @@
 			<uses-permission android:name="android.permission.BLUETOOTH" />
             <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
             <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-            <!--
-			<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-            -->
             <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
         </config-file>
 
@@ -110,16 +103,16 @@
                      android:name="org.altbeacon.beacon.BeaconIntentProcessor">
                 <meta-data android:name="background" android:value="true" />
                 <intent-filter android:priority="1" >
-                    <action android:name="com.unarin.cordova.beacon.IBeaconPlugin.DID_RANGING" />
-                    <action android:name="com.unarin.cordova.beacon.IBeaconPlugin.DID_MONITORING" />
+                    <action android:name="org.apache.cordova.beacon.IBeaconPlugin.DID_RANGING" />
+                    <action android:name="org.apache.cordova.beacon.IBeaconPlugin.DID_MONITORING" />
                 </intent-filter>
             </service>
         </config-file>
 
-        <source-file src="src/android/LocationManager.java" target-dir="src/com/unarin/cordova/beacon" />
-        <source-file src="src/android/IBeaconServiceNotifier.java" target-dir="src/com/unarin/cordova/beacon" />
-        <source-file src="src/android/ILocationManagerCommand.java" target-dir="src/com/unarin/cordova/beacon" />
-        <source-file src="src/android/PausableThreadPoolExecutor.java" target-dir="src/com/unarin/cordova/beacon" />
+        <source-file src="src/android/LocationManager.java" target-dir="src/org/apache/cordova/beacon" />
+        <source-file src="src/android/IBeaconServiceNotifier.java" target-dir="src/org/apache/cordova/beacon" />
+        <source-file src="src/android/ILocationManagerCommand.java" target-dir="src/org/apache/cordova/beacon" />
+        <source-file src="src/android/PausableThreadPoolExecutor.java" target-dir="src/org/apache/cordova/beacon" />
 
         <framework src="src/android/AltBeacon.gradle" custom="true" type="gradleReference" />
     </platform>

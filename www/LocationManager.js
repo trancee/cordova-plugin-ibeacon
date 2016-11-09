@@ -18,15 +18,14 @@
  */
 
 var exec = require('cordova/exec');
-var _ = require('com.unarin.cordova.beacon.underscorejs');
-var Q = require('com.unarin.cordova.beacon.Q');
+var _ = require('org.apache.cordova.beacon.underscorejs');
 
-var Regions = require('com.unarin.cordova.beacon.Regions');
-var Delegate = require('com.unarin.cordova.beacon.Delegate');
+var Regions = require('org.apache.cordova.beacon.Regions');
+var Delegate = require('org.apache.cordova.beacon.Delegate');
 
-var Region = require('com.unarin.cordova.beacon.Region');
-var CircularRegion = require('com.unarin.cordova.beacon.CircularRegion');
-var BeaconRegion = require('com.unarin.cordova.beacon.BeaconRegion');
+var Region = require('org.apache.cordova.beacon.Region');
+var CircularRegion = require('org.apache.cordova.beacon.CircularRegion');
+var BeaconRegion = require('org.apache.cordova.beacon.BeaconRegion');
 
 /**
  * Creates an instance of the plugin.
@@ -87,23 +86,22 @@ LocationManager.prototype.setDelegate = function(newDelegate) {
  * The same callback will be used for success and fail handling since the
  * handling is the same.
  *
- * @returns {Q.Promise}
+ * @returns {Promise}
  */
 LocationManager.prototype._registerDelegateCallbackId = function () {
 	this.appendToDeviceLog('registerDelegateCallbackId()');
-	var d = Q.defer();
 
-	exec(_.bind(this._onDelegateCallback, this, d), _.bind(this._onDelegateCallback, this, d), "LocationManager",
-		"registerDelegateCallbackId", []);
-
-	return d.promise;
+	return new Promise(function (resolve, reject) {
+		exec(_.bind(this._onDelegateCallback, this, resolve), _.bind(this._onDelegateCallback, this, resolve),
+			"LocationManager", "registerDelegateCallbackId", []);
+	});
 };
 
 /**
  * Handles asynchronous calls from the native layer. In this context async
  * means that message is not a response to a request of the DOM.
  *
- * @param {type} deferred {promise, resolve, reject} object.
+ * @param {type} resolve Function to resolve the enclosing promise.
  *
  * @param {type} pluginResult The PluginResult object constructed by the
  * native layer as the payload of the message it wishes to send to the DOM
@@ -111,17 +109,14 @@ LocationManager.prototype._registerDelegateCallbackId = function () {
  *
  * @returns {undefined}
  */
-LocationManager.prototype._onDelegateCallback = function (deferred, pluginResult) {
+LocationManager.prototype._onDelegateCallback = function (resolve, pluginResult) {
 
 	this.appendToDeviceLog('_onDelegateCallback() ' + JSON.stringify(pluginResult));
 
 	if (pluginResult && _.isString(pluginResult['eventType'])) { // The native layer calling the DOM with a delegate event.
 		this._mapDelegateCallback(pluginResult);
-	} else if (Q.isPending(deferred.promise)) { // The callback ID registration finished, runs only once.
-		deferred.resolve();
-	} else { // The native layer calls back the delegate without specifying an event, coding error.
-		console.error('Delegate registration promise is already been resolved, all subsequent callbacks should provide an "eventType" field.');
-	}
+	} else
+		resolve();
 };
 
 /**
@@ -183,7 +178,7 @@ LocationManager.prototype._preProcessorExecutor = function (resolve, pluginResul
  * takes an iterable (array) as it's parameter and applies a certain
  * operation to the elements of that iterable.
  *
- * @returns {Q.Promise}
+ * @returns {Promise}
  */
 LocationManager.prototype._promisedExec = function (method, commandArgs, preProcessors) {
 	var self = this;
@@ -193,16 +188,14 @@ LocationManager.prototype._promisedExec = function (method, commandArgs, preProc
 		return _.isFunction(preProcessor);
 	});
 
-	var d = Q.defer();
+	return new Promise(function(resolve, reject) {
+		var resolveWrap = function(pluginResult) {
+			self._preProcessorExecutor(resolve, pluginResult, preProcessors);
+		};
 
+		exec(resolveWrap, reject, "LocationManager", method, commandArgs);
+	});
 
-	var resolveWrap = function(pluginResult) {
-		self._preProcessorExecutor(d.resolve, pluginResult, preProcessors);
-	};
-
-	exec(resolveWrap, d.reject, "LocationManager", method, commandArgs);
-
-	return d.promise;
 };
 
 /**
@@ -222,7 +215,7 @@ LocationManager.prototype._promisedExec = function (method, commandArgs, preProc
  * message get emitted in the native runtime and the DOM as well after a certain
  * period of time.
  *
- * @return {Q.Promise} Returns a promise which is resolved as soon as the
+ * @return {Promise} Returns a promise which is resolved as soon as the
  * native layer acknowledged the request and started to send events.
  */
 LocationManager.prototype.onDomDelegateReady = function() {
@@ -231,7 +224,7 @@ LocationManager.prototype.onDomDelegateReady = function() {
 
 /**
  * Determines if bluetooth is switched on, according to the native layer.
- * @returns {Q.Promise} Returns a promise which is resolved with a {Boolean}
+ * @returns {Promise} Returns a promise which is resolved with a {Boolean}
  * indicating whether bluetooth is active.
  */
 LocationManager.prototype.isBluetoothEnabled = function() {
@@ -241,7 +234,7 @@ LocationManager.prototype.isBluetoothEnabled = function() {
 /**
  * Enables Bluetooth using the native Layer. (ANDROID ONLY)
  *
- * @returns {Q.Promise} Returns a promise which is resolved when Bluetooth
+ * @returns {Promise} Returns a promise which is resolved when Bluetooth
  * could be enabled. If not, the promise will be rejected with an error.
  */
 LocationManager.prototype.enableBluetooth = function() {
@@ -251,7 +244,7 @@ LocationManager.prototype.enableBluetooth = function() {
 /**
  * Disables Bluetooth using the native Layer. (ANDROID ONLY)
  *
- * @returns {Q.Promise} Returns a promise which is resolved when Bluetooth
+ * @returns {Promise} Returns a promise which is resolved when Bluetooth
  * could be enabled. If not, the promise will be rejected with an error.
  */
 LocationManager.prototype.disableBluetooth = function() {
@@ -272,7 +265,7 @@ LocationManager.prototype.disableBluetooth = function() {
  * @param {Region} region An instance of {Region} which will be monitored
  * by the operating system.
  *
- * @return {Q.Promise} Returns a promise which is resolved as soon as the
+ * @return {Promise} Returns a promise which is resolved as soon as the
  * native layer acknowledged the dispatch of the monitoring request.
  */
 LocationManager.prototype.startMonitoringForRegion = function(region) {
@@ -291,7 +284,7 @@ LocationManager.prototype.startMonitoringForRegion = function(region) {
  * @param {Region} region An instance of {Region} which will be monitored
  * by the operating system.
  *
- * @return {Q.Promise} Returns a promise which is resolved as soon as the
+ * @return {Promise} Returns a promise which is resolved as soon as the
  * native layer acknowledged the dispatch of the request to stop monitoring.
  */
 LocationManager.prototype.stopMonitoringForRegion = function(region) {
@@ -309,7 +302,7 @@ LocationManager.prototype.stopMonitoringForRegion = function(region) {
  * @param {Region} region An instance of {Region} which will be monitored
  * by the operating system.
  *
- * @return {Q.Promise} Returns a promise which is resolved as soon as the
+ * @return {Promise} Returns a promise which is resolved as soon as the
  * native layer acknowledged the dispatch of the request to stop monitoring.
  */
 LocationManager.prototype.requestStateForRegion = function(region) {
@@ -328,7 +321,7 @@ LocationManager.prototype.requestStateForRegion = function(region) {
  * @param {Region} region An instance of {BeaconRegion} which will be monitored
  * by the operating system.
  *
- * @return {Q.Promise} Returns a promise which is resolved as soon as the
+ * @return {Promise} Returns a promise which is resolved as soon as the
  * native layer acknowledged the dispatch of the monitoring request.
  */
 LocationManager.prototype.startRangingBeaconsInRegion = function(region) {
@@ -349,7 +342,7 @@ LocationManager.prototype.startRangingBeaconsInRegion = function(region) {
  * @param {Region} region An instance of {BeaconRegion} which will be monitored
  * by the operating system.
  *
- * @return {Q.Promise} Returns a promise which is resolved as soon as the
+ * @return {Promise} Returns a promise which is resolved as soon as the
  * native layer acknowledged the dispatch of the request to stop monitoring.
  */
 LocationManager.prototype.stopRangingBeaconsInRegion = function(region) {
@@ -362,7 +355,7 @@ LocationManager.prototype.stopRangingBeaconsInRegion = function(region) {
 /**
  * Queries the native layer to determine the current authorization in effect.
  *
- * @returns {Q.Promise} Returns a promise which is resolved with the
+ * @returns {Promise} Returns a promise which is resolved with the
  * requested authorization status.
  */
 LocationManager.prototype.getAuthorizationStatus = function() {
@@ -376,7 +369,7 @@ LocationManager.prototype.getAuthorizationStatus = function() {
  * <a href="https://developer.apple.com/library/prerelease/iOS/documentation/CoreLocation/Reference/CLLocationManager_Class/index.html#//apple_ref/occ/instm/CLLocationManager/requestAlwaysAuthorization">requestAlwaysAuthorization</a>
  *
  * If you are using this plugin on Android devices only, you will never have to use this, nor {@code requestAlwaysAuthorization}
- * @returns {Q.Promise}
+ * @returns {Promise}
  */
 LocationManager.prototype.requestWhenInUseAuthorization = function() {
 	return this._promisedExec('requestWhenInUseAuthorization', [], []);
@@ -385,7 +378,7 @@ LocationManager.prototype.requestWhenInUseAuthorization = function() {
 /**
  * See the docuemntation of {@code requestWhenInUseAuthorization} for further details.
  *
- * @returns {Q.Promise}
+ * @returns {Promise}
  */
 LocationManager.prototype.requestAlwaysAuthorization = function() {
 	return this._promisedExec('requestAlwaysAuthorization', [], []);
@@ -393,7 +386,7 @@ LocationManager.prototype.requestAlwaysAuthorization = function() {
 
 /**
  *
- * @returns {Q.Promise} Returns a promise which is resolved with an {Array}
+ * @returns {Promise} Returns a promise which is resolved with an {Array}
  * of {Region} instances that are being monitored by the native layer.
  */
 LocationManager.prototype.getMonitoredRegions = function() {
@@ -403,7 +396,7 @@ LocationManager.prototype.getMonitoredRegions = function() {
 
 /**
  *
- * @returns {Q.Promise} Returns a promise which is resolved with an {Array}
+ * @returns {Promise} Returns a promise which is resolved with an {Array}
  * of {Region} instances that are being ranged by the native layer.
  */
 LocationManager.prototype.getRangedRegions = function() {
@@ -413,7 +406,7 @@ LocationManager.prototype.getRangedRegions = function() {
 
 /**
  * Determines if ranging is available or not, according to the native layer.
- * @returns {Q.Promise} Returns a promise which is resolved with a {Boolean}
+ * @returns {Promise} Returns a promise which is resolved with a {Boolean}
  * indicating whether ranging is available or not.
  */
 LocationManager.prototype.isRangingAvailable = function() {
@@ -426,7 +419,7 @@ LocationManager.prototype.isRangingAvailable = function() {
  * @param {Region} region An instance of {Region} which will be checked
  * by the operating system.
  *
- * @returns {Q.Promise} Returns a promise which is resolved with a {Boolean}
+ * @returns {Promise} Returns a promise which is resolved with a {Boolean}
  * indicating whether the region type is supported or not.
  */
 LocationManager.prototype.isMonitoringAvailableForClass = function(region) {
@@ -448,7 +441,7 @@ LocationManager.prototype.isMonitoringAvailableForClass = function(region) {
  * @param {Integer} measuredPower: Optional parameter, if left empty, the device will
  * use it's own default value.
  *
- * @return {Q.Promise} Returns a promise which is resolved as soon as the
+ * @return {Promise} Returns a promise which is resolved as soon as the
  * native layer acknowledged the dispatch of the advertising request.
  */
 LocationManager.prototype.startAdvertising = function(region, measuredPower) {
@@ -464,7 +457,7 @@ LocationManager.prototype.startAdvertising = function(region, measuredPower) {
  *
  * This is done asynchronously and may not be immediately reflected in isAdvertising.
  *
- * @return {Q.Promise} Returns a promise which is resolved as soon as the
+ * @return {Promise} Returns a promise which is resolved as soon as the
  * native layer acknowledged the dispatch of the request to stop advertising.
  */
 LocationManager.prototype.stopAdvertising = function() {
@@ -473,7 +466,7 @@ LocationManager.prototype.stopAdvertising = function() {
 
 /**
  * Determines if advertising is available or not, according to the native layer.
- * @returns {Q.Promise} Returns a promise which is resolved with a {Boolean}
+ * @returns {Promise} Returns a promise which is resolved with a {Boolean}
  * indicating whether advertising is available or not.
  */
 LocationManager.prototype.isAdvertisingAvailable = function() {
@@ -482,7 +475,7 @@ LocationManager.prototype.isAdvertisingAvailable = function() {
 
 /**
  * Determines if advertising is currently active, according to the native layer.
- * @returns {Q.Promise} Returns a promise which is resolved with a {Boolean}
+ * @returns {Promise} Returns a promise which is resolved with a {Boolean}
  * indicating whether advertising is active.
  */
 LocationManager.prototype.isAdvertising = function() {
@@ -493,7 +486,7 @@ LocationManager.prototype.isAdvertising = function() {
  * Disables debug logging in the native layer. Use this method if you want
  * to prevent this plugin from writing to the device logs.
  *
- * @returns {Q.Promise} Returns a promise which is resolved as soon as the
+ * @returns {Promise} Returns a promise which is resolved as soon as the
  * native layer has set the logging level accordingly.
  */
 LocationManager.prototype.disableDebugLogs = function() {
@@ -505,7 +498,7 @@ LocationManager.prototype.disableDebugLogs = function() {
  * to allow the plugin the posting local notifications.
  * This can be very helpful when debugging how to apps behave when launched into the background.
  *
- * @returns {Q.Promise} Returns a promise which is resolved as soon as the
+ * @returns {Promise} Returns a promise which is resolved as soon as the
  * native layer has set the flag to enabled.
  */
 LocationManager.prototype.enableDebugNotifications = function() {
@@ -515,7 +508,7 @@ LocationManager.prototype.enableDebugNotifications = function() {
  * Disables the posting of debug notifications in the native layer. Use this method if you want
  * to prevent the plugin from posting local notifications.
  *
- * @returns {Q.Promise} Returns a promise which is resolved as soon as the
+ * @returns {Promise} Returns a promise which is resolved as soon as the
  * native layer has set the flag to disabled.
  */
 LocationManager.prototype.disableDebugNotifications = function() {
@@ -526,7 +519,7 @@ LocationManager.prototype.disableDebugNotifications = function() {
  * Enables debug logging in the native layer. Use this method if you want
  * a debug the inner workings of this plugin.
  *
- * @returns {Q.Promise} Returns a promise which is resolved as soon as the
+ * @returns {Promise} Returns a promise which is resolved as soon as the
  * native layer has set the logging level accordingly.
  */
 LocationManager.prototype.enableDebugLogs = function() {
@@ -539,7 +532,7 @@ LocationManager.prototype.enableDebugLogs = function() {
  *
  * @param {String} message The message to append to the device logs.
  *
- * @returns {Q.Promise} Returns a promise which is resolved with the log
+ * @returns {Promise} Returns a promise which is resolved with the log
  * message received by the native layer for appending. The returned message
  * is expected to be equivalent to the one provided in the original call.
  */
@@ -553,7 +546,7 @@ LocationManager.prototype.appendToDeviceLog = function(message) {
  *
  * @param {Number} SampleExpirationMilliseconds.
  *
- * @returns {Q.Promise} Returns a promise which is resolved as soon as the
+ * @returns {Promise} Returns a promise which is resolved as soon as the
  * native layer has set the filter.
  */
 LocationManager.prototype.setRssiFilterRunningAverage = function(expirationMilliseconds) {
